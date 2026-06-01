@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="5" fill="#0e0e16"/>
+  <!-- top face -->
+  <polygon points="16,5 27,11 16,17 5,11" fill="#ff5068"/>
+  <!-- right face -->
+  <polygon points="27,11 16,17 16,27 27,21" fill="#fa324d"/>
+  <!-- left face -->
+  <polygon points="5,11 16,17 16,27 5,21" fill="#b01030"/>
+</svg>
