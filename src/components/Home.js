@@ -36,6 +36,7 @@ const Home = () => {
   const [playerName, setPlayerName] = useState("");
   const [finalScore, setFinalScore] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null); // "ok" | "error"
 
   const loadHighScores = useCallback(async () => {
     const scores = await fetchHighScores();
@@ -154,11 +155,19 @@ const Home = () => {
   const handleSubmitScore = async () => {
     const name = playerName.trim() || "Anonymous";
     setSubmitting(true);
-    await submitScore(name, finalScore);
-    await loadHighScores();
+    const ok = await submitScore(name, finalScore);
+    if (ok) {
+      await loadHighScores();
+      setSubmitStatus("ok");
+      setTimeout(() => {
+        setNamePromptOpen(false);
+        setPlayerName("");
+        setSubmitStatus(null);
+      }, 1500);
+    } else {
+      setSubmitStatus("error");
+    }
     setSubmitting(false);
-    setNamePromptOpen(false);
-    setPlayerName("");
   };
 
   const handleSkipScore = () => {
@@ -253,14 +262,24 @@ const Home = () => {
               onKeyDown={(e) => e.key === "Enter" && handleSubmitScore()}
               autoFocus
             />
-            <div className="name-prompt-buttons">
-              <button onClick={handleSubmitScore} disabled={submitting}>
-                {submitting ? "Saving..." : "Submit"}
-              </button>
-              <button onClick={handleSkipScore} className="skip-button">
-                Skip
-              </button>
-            </div>
+            {submitStatus === "ok" && (
+              <p className="submit-status submit-ok">Score saved!</p>
+            )}
+            {submitStatus === "error" && (
+              <p className="submit-status submit-error">
+                Could not save score — check leaderboard config.
+              </p>
+            )}
+            {!submitStatus && (
+              <div className="name-prompt-buttons">
+                <button onClick={handleSubmitScore} disabled={submitting}>
+                  {submitting ? "Saving..." : "Submit"}
+                </button>
+                <button onClick={handleSkipScore} className="skip-button">
+                  Skip
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

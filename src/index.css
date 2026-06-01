@@ -80,8 +80,8 @@ nav {
 
 /* ─── Footer ──────────────────────────────────────────────── */
 .footer {
-  background: var(--secondary);
-  border-top: 3px solid var(--primary);
+  background: var(--surface2);
+  border-top: 2px solid var(--border);
   padding: 14px 24px;
 }
 
@@ -392,6 +392,18 @@ nav {
   background: var(--surface2);
   color: var(--text);
 }
+
+/* ─── Submit status ───────────────────────────────────────── */
+.submit-status {
+  font-family: "VT323", monospace;
+  font-size: 1.4em;
+  letter-spacing: 1px;
+  margin: 8px 0 0;
+  text-align: center;
+}
+
+.submit-ok    { color: #4ade80; }
+.submit-error { color: var(--primary); }
 
 /* ─── Fetch error ─────────────────────────────────────────── */
 .fetch-error {
