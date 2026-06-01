@@ -4,7 +4,7 @@ import Home from "./components/Home";
 import Register from "./components/Register";
 import Login from "./components/Login";
 import { supabase } from "./supabaseClient";
-import { logoutUser } from "./services/authService"; // Import logoutUser
+import { logoutUser } from "./services/supaBaseAuthService";
 import logo from "./assets/logo.png";
 import Footer from "./components/Footer";
 import "./App.css";

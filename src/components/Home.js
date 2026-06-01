@@ -4,8 +4,8 @@ import Categories from "./Categories";
 import QuestionModal from "./QuestionModal";
 import Instructions from "./Instructions"; // Import the Instructions component
 import { supabase } from "../supabaseClient";
-import { storeScore } from "../services/scoreService";
-import { recordHighScore } from "../services/authService"; // Import the recordHighScore function
+import { storeScore } from "../services/supaBaseScoreService";
+import { recordHighScore } from "../services/supaBaseAuthService";
 import he from "he";
 import "../index.css";
 

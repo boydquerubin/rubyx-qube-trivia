@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchHighScores } from "../services/authService";
+import { fetchHighScores } from "../services/supaBaseAuthService";
 import HighScoreCard from "./HighScoreCard";
 
 const HighScoreList = () => {

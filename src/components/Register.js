@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { registerUser } from "../services/authService";
+import { registerUser } from "../services/supaBaseAuthService";
 import "./Register.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
