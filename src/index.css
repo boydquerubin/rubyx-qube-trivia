@@ -1,32 +1,24 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;800&family=VT323&display=swap");
 
 :root {
-  --primary: #fa324d;
+  --primary:  #fa324d;
   --secondary: #0e0e16;
-  --accent: #10b0e6;
-  --gold: #ffd700;
-  --silver: #c0c0c0;
-  --bronze: #cd7f32;
-  --surface: #16161f;
+  --accent:   #10b0e6;
+  --gold:     #ffd700;
+  --surface:  #16161f;
   --surface2: #1e1e2e;
-  --border: rgba(250, 50, 77, 0.25);
-  --text: #fefcfb;
+  --border:   rgba(250, 50, 77, 0.22);
+  --text:     #fefcfb;
   --text-dim: #7777aa;
 }
 
-/* ─── Reset & Base ────────────────────────────────────────── */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+/* ─── Reset ───────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
 
-html,
-body {
+html, body {
   height: 100%;
   margin: 0;
-  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
   background: var(--secondary);
   color: var(--text);
@@ -34,13 +26,17 @@ body {
   flex-direction: column;
 }
 
-h1, h2, h3, p {
-  color: var(--text);
+/* Scope the blanket centre-align to elements that need it */
+.leaderboard-header h2,
+.hud-label,
+.hud-value,
+.no-scores,
+.no-scores-sub,
+.fetch-error,
+.name-prompt h2,
+.final-score-text,
+.name-prompt > p {
   text-align: center;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
 /* ─── Page Shell ──────────────────────────────────────────── */
@@ -50,9 +46,7 @@ code {
   min-height: 100vh;
 }
 
-.main-content {
-  flex-grow: 1;
-}
+.main-content { flex-grow: 1; }
 
 /* ─── Nav ─────────────────────────────────────────────────── */
 nav {
@@ -63,10 +57,7 @@ nav {
   box-shadow: 0 2px 12px rgba(250, 50, 77, 0.4);
 }
 
-.nav-links {
-  display: flex;
-  align-items: center;
-}
+.nav-links { display: flex; align-items: center; }
 
 .navbar-brand {
   display: flex;
@@ -81,30 +72,43 @@ nav {
   font-size: 1.8em;
   letter-spacing: 2px;
   color: #fff;
-  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+  text-align: left;
 }
 
-.logo {
-  filter: invert(100%) brightness(200%);
-}
+.logo { filter: invert(100%) brightness(200%); }
 
 /* ─── Footer ──────────────────────────────────────────────── */
 .footer {
+  background: var(--secondary);
+  border-top: 3px solid var(--primary);
+  padding: 14px 24px;
+}
+
+.footer-inner {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 12px 20px;
-  background: var(--surface2);
-  border-top: 1px solid var(--border);
-  color: var(--text-dim);
+  gap: 10px;
   font-size: 13px;
+  color: var(--text-dim);
+  flex-wrap: wrap;
 }
+
+.footer-brand {
+  font-family: "VT323", monospace;
+  font-size: 1.3em;
+  color: var(--primary);
+  letter-spacing: 1px;
+}
+
+.footer-divider { color: #333355; }
 
 /* ─── Home page layout ────────────────────────────────────── */
 .page {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 24px 20px 60px;
+  padding: 24px 20px 40px;
 }
 
 .game-layout {
@@ -115,9 +119,7 @@ nav {
 }
 
 @media (max-width: 860px) {
-  .game-layout {
-    grid-template-columns: 1fr;
-  }
+  .game-layout { grid-template-columns: 1fr; }
 }
 
 /* ─── Leaderboard panel ───────────────────────────────────── */
@@ -133,7 +135,6 @@ nav {
 .leaderboard-header {
   background: var(--primary);
   padding: 12px 16px;
-  text-align: center;
 }
 
 .leaderboard-header h2 {
@@ -142,19 +143,24 @@ nav {
   letter-spacing: 4px;
   margin: 0;
   color: #fff;
-  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4);
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.4);
 }
 
-.leaderboard-list {
-  padding: 8px 0;
-}
+.leaderboard-list { padding: 8px 0; }
 
 .no-scores {
   font-family: "VT323", monospace;
-  font-size: 1.2em;
+  font-size: 1.3em;
   color: var(--text-dim);
-  text-align: center;
-  padding: 24px 16px;
+  padding: 20px 16px 4px;
+  margin: 0;
+}
+
+.no-scores-sub {
+  font-family: "VT323", monospace;
+  font-size: 1.1em;
+  color: #444466;
+  padding: 0 16px 20px;
   margin: 0;
 }
 
@@ -178,7 +184,7 @@ nav {
 
 .hud-label {
   font-family: "VT323", monospace;
-  font-size: 1em;
+  font-size: 0.95em;
   letter-spacing: 3px;
   color: var(--text-dim);
 }
@@ -197,7 +203,7 @@ nav {
 
 @keyframes pulse {
   from { opacity: 1; }
-  to   { opacity: 0.5; }
+  to   { opacity: 0.4; }
 }
 
 /* ─── Start button ────────────────────────────────────────── */
@@ -218,7 +224,7 @@ nav {
   border-radius: 8px;
   cursor: pointer;
   transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
-  box-shadow: 0 4px 0 #9a0020, 0 6px 16px rgba(250, 50, 77, 0.4);
+  box-shadow: 0 4px 0 #9a0020, 0 6px 16px rgba(250, 50, 77, 0.35);
 }
 
 .start-game-button:hover {
@@ -229,7 +235,7 @@ nav {
 
 .start-game-button:active {
   transform: translateY(2px);
-  box-shadow: 0 2px 0 #9a0020, 0 4px 10px rgba(250, 50, 77, 0.3);
+  box-shadow: 0 2px 0 #9a0020;
 }
 
 /* ─── Categories ──────────────────────────────────────────── */
@@ -240,38 +246,38 @@ nav {
 }
 
 @media (max-width: 560px) {
-  .categories-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  .categories-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 .categories-card {
   border: 1px solid var(--border);
   border-radius: 8px;
   overflow: hidden;
-  text-align: center;
   cursor: pointer;
   transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
   background: var(--surface2);
-  position: relative;
 }
 
 .categories-card img {
   width: 100%;
-  height: 130px;
+  height: 120px;
   object-fit: cover;
   display: block;
-  filter: brightness(0.75);
+  filter: brightness(0.7);
   transition: filter 0.15s;
 }
 
 .categories-card h3 {
   margin: 0;
-  padding: 8px 6px;
-  font-size: 0.85em;
+  padding: 8px 8px;
+  font-size: 0.82em;
   font-weight: 600;
   color: var(--text);
   background: var(--surface2);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .categories-card:hover {
@@ -280,16 +286,14 @@ nav {
   box-shadow: 0 4px 16px rgba(250, 50, 77, 0.3);
 }
 
-.categories-card:hover img {
-  filter: brightness(1);
-}
+.categories-card:hover img { filter: brightness(1); }
 
 /* ─── Modal overlay (shared) ──────────────────────────────── */
 .modal-overlay,
 .instructions-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.82);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -301,7 +305,7 @@ nav {
 .name-prompt-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(0, 0, 0, 0.88);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -314,7 +318,6 @@ nav {
   border: 2px solid var(--primary);
   border-radius: 12px;
   padding: 36px 40px;
-  text-align: center;
   max-width: 380px;
   width: 100%;
   box-shadow: 0 0 40px rgba(250, 50, 77, 0.25);
@@ -325,6 +328,7 @@ nav {
   font-size: 2.8em;
   letter-spacing: 3px;
   margin: 0 0 4px;
+  color: var(--text);
 }
 
 .final-score-text {
@@ -334,7 +338,7 @@ nav {
   margin: 0 0 16px;
 }
 
-.name-prompt p {
+.name-prompt > p {
   color: var(--text-dim);
   font-size: 0.9em;
   margin: 0 0 12px;
@@ -354,9 +358,7 @@ nav {
   transition: border-color 0.15s;
 }
 
-.name-prompt input:focus {
-  border-color: var(--primary);
-}
+.name-prompt input:focus { border-color: var(--primary); }
 
 .name-prompt-buttons {
   display: flex;
@@ -377,14 +379,8 @@ nav {
   transition: background 0.15s;
 }
 
-.name-prompt-buttons button:hover {
-  background: #ff1a38;
-}
-
-.name-prompt-buttons button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
+.name-prompt-buttons button:hover { background: #ff1a38; }
+.name-prompt-buttons button:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .name-prompt-buttons .skip-button {
   background: transparent;
@@ -399,11 +395,10 @@ nav {
 
 /* ─── Fetch error ─────────────────────────────────────────── */
 .fetch-error {
-  background: rgba(250, 50, 77, 0.15);
+  background: rgba(250, 50, 77, 0.12);
   border: 1px solid var(--primary);
   border-radius: 6px;
   padding: 8px 16px;
   font-size: 0.9em;
-  text-align: center;
   margin-bottom: 16px;
 }

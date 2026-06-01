@@ -19,7 +19,7 @@ function App() {
                 alt="Rubyx Qube Logo"
                 className="logo"
               />
-              <h1>Rubyx Qube</h1>
+              <h1>Rubyx Qube Trivia</h1>
             </Link>
           </div>
         </nav>

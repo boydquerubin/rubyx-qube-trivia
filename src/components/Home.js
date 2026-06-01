@@ -184,7 +184,10 @@ const Home = () => {
                 <HighScoreCard key={i} highScore={hs} rank={i + 1} />
               ))
             ) : (
-              <p className="no-scores">No scores yet!{"\n"}Be the first!</p>
+              <>
+                <p className="no-scores">No scores yet!</p>
+                <p className="no-scores-sub">Be the first!</p>
+              </>
             )}
           </div>
         </aside>

@@ -1,9 +1,1 @@
-/* App.css — score/timer HUD and start button */
-
-.score-container {
-  display: none; /* replaced by .hud in game-layout */
-}
-
-.start-button-container {
-  display: none; /* replaced by .start-area */
-}
+/* Styles consolidated in index.css */
