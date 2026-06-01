@@ -2,23 +2,29 @@ import React from "react";
 import PropTypes from "prop-types";
 import "./HighScoreCard.css";
 
-const HighScoreCard = ({ highScore }) => {
+const rankColor = (rank) => {
+  if (rank === 1) return "gold";
+  if (rank === 2) return "silver";
+  if (rank === 3) return "bronze";
+  return "default";
+};
+
+const HighScoreCard = ({ highScore, rank }) => {
   return (
-    <div className="high-score-title-box">
-      <h2>High Score</h2>
-      <div className="high-score-card">
-        <h3>{highScore.username}</h3>
-        <div className="score">{highScore.score}</div>
-      </div>
+    <div className={`hs-row hs-rank-${rankColor(rank)}`}>
+      <span className="hs-rank">{rank}</span>
+      <span className="hs-name">{highScore.username}</span>
+      <span className="hs-score">{highScore.score}</span>
     </div>
   );
 };
 
 HighScoreCard.propTypes = {
   highScore: PropTypes.shape({
-    username: PropTypes.string.isRequired, // Ensure the field name matches your database
+    username: PropTypes.string.isRequired,
     score: PropTypes.number.isRequired,
   }).isRequired,
+  rank: PropTypes.number.isRequired,
 };
 
 export default HighScoreCard;

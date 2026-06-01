@@ -52,10 +52,10 @@ const Home = () => {
         const response = await fetch("https://opentdb.com/api_category.php");
         if (!response.ok) throw new Error("Network response was not ok");
         const data = await response.json();
-        const filteredCategories = data.trivia_categories.filter((category) =>
-          desiredCategories.includes(category.name)
+        const filtered = data.trivia_categories.filter((c) =>
+          desiredCategories.includes(c.name)
         );
-        setCategories(filteredCategories);
+        setCategories(filtered);
       } catch (error) {
         setFetchError("Could not fetch categories");
         console.error(error);
@@ -75,10 +75,8 @@ const Home = () => {
 
   useEffect(() => {
     if (preGameStarted && preGameTimer > 0) {
-      const countdown = setInterval(() => {
-        setPreGameTimer((prev) => prev - 1);
-      }, 1000);
-      return () => clearInterval(countdown);
+      const id = setInterval(() => setPreGameTimer((p) => p - 1), 1000);
+      return () => clearInterval(id);
     } else if (preGameStarted && preGameTimer === 0) {
       setPreGameStarted(false);
       setGameStarted(true);
@@ -87,10 +85,8 @@ const Home = () => {
 
   useEffect(() => {
     if (gameStarted && timer > 0) {
-      const countdown = setInterval(() => {
-        setTimer((prev) => prev - 1);
-      }, 1000);
-      return () => clearInterval(countdown);
+      const id = setInterval(() => setTimer((p) => p - 1), 1000);
+      return () => clearInterval(id);
     } else if (gameStarted && timer === 0) {
       handleGameOver();
     }
@@ -101,28 +97,24 @@ const Home = () => {
       const response = await fetch(
         `https://opentdb.com/api.php?amount=1&category=${category.id}&type=multiple`
       );
-
       if (response.status === 429) {
-        setFetchError("Too many requests. Please wait a moment and try again.");
+        setFetchError("Too many requests — wait a moment and try again.");
         setTimeout(() => setFetchError(null), 3000);
         return;
       }
-
       const data = await response.json();
-
       if (data.results.length === 0) {
-        setFetchError("No questions available. Please try a different category.");
+        setFetchError("No questions available. Try a different category.");
         return;
       }
-
-      const question = data.results[0];
+      const q = data.results[0];
       setCurrentQuestion({
-        text: he.decode(question.question),
+        text: he.decode(q.question),
         options: [
-          ...question.incorrect_answers.map((a) => he.decode(a)),
-          he.decode(question.correct_answer),
+          ...q.incorrect_answers.map((a) => he.decode(a)),
+          he.decode(q.correct_answer),
         ].sort(() => Math.random() - 0.5),
-        correctAnswer: he.decode(question.correct_answer),
+        correctAnswer: he.decode(q.correct_answer),
       });
       setIsModalOpen(true);
     } catch (error) {
@@ -137,9 +129,7 @@ const Home = () => {
   };
 
   const handleCloseModal = (isCorrect) => {
-    if (isCorrect) {
-      setScore((prev) => prev + 1);
-    }
+    if (isCorrect) setScore((p) => p + 1);
     setIsModalOpen(false);
     setCurrentQuestion(null);
   };
@@ -147,13 +137,11 @@ const Home = () => {
   const handleSkip = async () => {
     setIsModalOpen(false);
     setCurrentQuestion(null);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise((r) => setTimeout(r, 2000));
     await fetchQuestion(selectedCategory);
   };
 
-  const handleStartGame = () => {
-    setIsInstructionsOpen(true);
-  };
+  const handleStartGame = () => setIsInstructionsOpen(true);
 
   const handleBeginGame = () => {
     setIsInstructionsOpen(false);
@@ -161,10 +149,6 @@ const Home = () => {
     setTimer(60);
     setPreGameTimer(3);
     setPreGameStarted(true);
-  };
-
-  const handleCloseInstructions = () => {
-    setIsInstructionsOpen(false);
   };
 
   const handleSubmitScore = async () => {
@@ -182,43 +166,63 @@ const Home = () => {
     setPlayerName("");
   };
 
+  const timerDisplay = gameStarted ? timer : preGameStarted ? preGameTimer : "--";
+
   return (
     <div className="page home">
-      {fetchError && <p>{fetchError}</p>}
-      <div className="score-container">
-        <h2>Your Score: {score}</h2>
-        <h2>
-          {gameStarted
-            ? `Time Remaining: ${timer}s`
-            : preGameStarted
-            ? `Starting in: ${preGameTimer}`
-            : ""}
-        </h2>
-      </div>
-      <div
-        className={`start-button-container ${
-          gameStarted || preGameStarted ? "small" : ""
-        }`}
-      >
-        {!gameStarted && !preGameStarted && (
-          <button onClick={handleStartGame} className="start-game-button">
-            Start Game
-          </button>
-        )}
-      </div>
-      {highScores.length > 0 && (
-        <div className="highScore">
-          <div className="highScore-container">
-            {highScores.map((hs, i) => (
-              <HighScoreCard key={i} highScore={hs} />
-            ))}
+      {fetchError && <p className="fetch-error">{fetchError}</p>}
+
+      <div className="game-layout">
+        {/* ── Leaderboard sidebar ── */}
+        <aside className="leaderboard-panel">
+          <div className="leaderboard-header">
+            <h2>HIGH SCORES</h2>
           </div>
+          <div className="leaderboard-list">
+            {highScores.length > 0 ? (
+              highScores.slice(0, 10).map((hs, i) => (
+                <HighScoreCard key={i} highScore={hs} rank={i + 1} />
+              ))
+            ) : (
+              <p className="no-scores">No scores yet!{"\n"}Be the first!</p>
+            )}
+          </div>
+        </aside>
+
+        {/* ── Game area ── */}
+        <div className="game-area">
+          <div className="hud">
+            <div className="hud-block">
+              <span className="hud-label">SCORE</span>
+              <span className="hud-value">{score}</span>
+            </div>
+            <div className="hud-block">
+              <span className="hud-label">TIME</span>
+              <span
+                className={`hud-value${
+                  gameStarted && timer <= 10 ? " hud-urgent" : ""
+                }`}
+              >
+                {timerDisplay}
+              </span>
+            </div>
+          </div>
+
+          {!gameStarted && !preGameStarted && (
+            <div className="start-area">
+              <button onClick={handleStartGame} className="start-game-button">
+                START GAME
+              </button>
+            </div>
+          )}
+
+          <Categories
+            categories={categories}
+            onSelectCategory={handleSelectCategory}
+          />
         </div>
-      )}
-      <Categories
-        categories={categories}
-        onSelectCategory={handleSelectCategory}
-      />
+      </div>
+
       <QuestionModal
         question={currentQuestion}
         isOpen={isModalOpen}
@@ -227,15 +231,15 @@ const Home = () => {
       />
       <Instructions
         isOpen={isInstructionsOpen}
-        onClose={handleCloseInstructions}
+        onClose={() => setIsInstructionsOpen(false)}
         onBegin={handleBeginGame}
       />
 
       {namePromptOpen && (
         <div className="name-prompt-overlay">
           <div className="name-prompt">
-            <h2>Time's Up!</h2>
-            <p className="final-score-text">Your score: {finalScore}</p>
+            <h2>TIME'S UP!</h2>
+            <p className="final-score-text">SCORE: {finalScore}</p>
             <p>Enter your name for the leaderboard</p>
             <input
               type="text"

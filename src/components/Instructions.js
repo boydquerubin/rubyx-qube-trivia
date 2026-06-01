@@ -1,5 +1,5 @@
 import React from "react";
-import "./Instructions.css"; // Import the styles
+import "./Instructions.css";
 
 const Instructions = ({ isOpen, onClose, onBegin }) => {
   if (!isOpen) return null;
@@ -7,36 +7,37 @@ const Instructions = ({ isOpen, onClose, onBegin }) => {
   return (
     <div className="instructions-modal-overlay">
       <div className="instructions-modal-content">
-        <div className="header-container">
-          <h2>Welcome to Rubyx Qube!</h2>
-          <h2>Game Instructions:</h2>
+        <div className="instructions-header">
+          <h2>RUBYX QUBE</h2>
+          <p>How to Play</p>
         </div>
         <ul>
           <li>
-            <strong>Register and Login</strong> if you want to challenge the
-            High Score. Otherwise, enjoy this trivia app!
+            <strong>60 seconds</strong> on the clock — score as many points as
+            you can before time runs out.
           </li>
           <li>
-            <strong>Score as many points</strong> as you can before time runs
-            out.
-          </li>
-
-          <li>
-            <strong>Select a category</strong> after each question to
-            continue—questions won’t appear automatically.
+            <strong>Pick a category</strong> to get a question. Categories don't
+            reset, so mix it up!
           </li>
           <li>
-            <strong>Press the Begin button below</strong> to start the game when
-            you're ready.
+            <strong>Each correct answer</strong> is worth 1 point. Wrong answers
+            cost nothing — keep going.
+          </li>
+          <li>
+            <strong>When time's up</strong>, enter your name to claim your spot
+            on the leaderboard.
           </li>
         </ul>
         <h3>Good luck!</h3>
-        <button onClick={onBegin} className="begin-button">
-          Begin
-        </button>
-        <button onClick={onClose} className="close-button">
-          Close
-        </button>
+        <div className="instructions-buttons">
+          <button onClick={onBegin} className="begin-button">
+            Begin
+          </button>
+          <button onClick={onClose} className="close-button">
+            Close
+          </button>
+        </div>
       </div>
     </div>
   );

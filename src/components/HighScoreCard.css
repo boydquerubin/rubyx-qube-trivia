@@ -1,65 +1,53 @@
-/* HighScoreCard.css */
-.high-score-container {
+/* HighScoreCard.css — arcade leaderboard row */
+
+.hs-row {
   display: flex;
-  flex-direction: column;
-  align-items: center; /* Center the items horizontally */
-  margin-top: 20px;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  font-family: "VT323", monospace;
+  font-size: 1.25em;
+  gap: 10px;
+  transition: background 0.15s;
 }
 
-.high-score-title-box {
-  width: 100%;
-  max-width: 300px;
-  padding: 20px;
-  background: linear-gradient(145deg, #10b0e6, #10b0e6);
-  color: #fefcfb;
-  border-radius: 12px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  font-family: "VT323", monospace;
+.hs-row:hover {
+  background: rgba(250, 50, 77, 0.07);
+}
+
+.hs-row:last-child {
+  border-bottom: none;
+}
+
+/* top-3 tint */
+.hs-rank-gold   { background: rgba(255, 215,   0, 0.06); }
+.hs-rank-silver { background: rgba(192, 192, 192, 0.04); }
+.hs-rank-bronze { background: rgba(205, 127,  50, 0.04); }
+
+.hs-rank {
+  width: 26px;
   text-align: center;
-  margin-bottom: 40px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-shrink: 0;
+  font-size: 1em;
 }
 
-.high-score-title-box h2 {
-  margin: 0;
-  font-size: 2em;
-}
+.hs-rank-gold   .hs-rank { color: #ffd700; }
+.hs-rank-silver .hs-rank { color: #c0c0c0; }
+.hs-rank-bronze .hs-rank { color: #cd7f32; }
+.hs-rank-default .hs-rank { color: #555577; }
 
-.high-score-card {
-  width: 100%;
-  max-width: 300px;
-  padding: 20px;
-  background: linear-gradient(145deg, #dddddd, #c2c2c2);
+.hs-name {
+  flex: 1;
   color: #fefcfb;
-  border-radius: 12px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  font-family: "VT323", monospace;
-  transition: transform 0.3s, box-shadow 0.3s;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.high-score-card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+.hs-score {
+  color: #10b0e6;
+  font-size: 1.1em;
+  flex-shrink: 0;
 }
 
-.high-score-card h3 {
-  font-size: 2em;
-  margin: 0;
-  color: #0e0e16;
-}
-
-.high-score-card .score {
-  background: #f2f2f2;
-  color: #0e0e16;
-  border-radius: 6px;
-  padding: 10px 20px;
-  font-size: 1.8em;
-  margin-left: 20px;
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
-}
+.hs-rank-gold .hs-score { color: #ffd700; }
