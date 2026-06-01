@@ -2,10 +2,8 @@ import { useEffect, useState, useCallback } from "react";
 import HighScoreCard from "./HighScoreCard";
 import Categories from "./Categories";
 import QuestionModal from "./QuestionModal";
-import Instructions from "./Instructions"; // Import the Instructions component
-import { supabase } from "../supabaseClient";
-import { storeScore } from "../services/supaBaseScoreService";
-import { recordHighScore } from "../services/supaBaseAuthService";
+import Instructions from "./Instructions";
+import { fetchHighScores, submitScore } from "../services/dreamloService";
 import he from "he";
 import "../index.css";
 
@@ -21,62 +19,35 @@ const desiredCategories = [
   "Art",
 ];
 
-const Home = ({ user }) => {
+const Home = () => {
   const [fetchError, setFetchError] = useState(null);
   const [highScores, setHighScores] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isInstructionsOpen, setIsInstructionsOpen] = useState(false); // New state for instructions modal
+  const [isInstructionsOpen, setIsInstructionsOpen] = useState(false);
   const [score, setScore] = useState(0);
   const [timer, setTimer] = useState(60);
   const [preGameTimer, setPreGameTimer] = useState(3);
   const [gameStarted, setGameStarted] = useState(false);
   const [preGameStarted, setPreGameStarted] = useState(false);
+  const [namePromptOpen, setNamePromptOpen] = useState(false);
+  const [playerName, setPlayerName] = useState("");
+  const [finalScore, setFinalScore] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleGameOver = useCallback(async () => {
-    if (user && score > 0) {
-      const result = await recordHighScore(user.id, score);
-      if (result?.success) {
-        console.log("High score recorded successfully");
-        // Re-fetch the high scores to update the state
-        const { data: updatedHighScores, error } = await supabase
-          .from("highScore")
-          .select("*")
-          .order("score", { ascending: false });
-
-        if (error) {
-          console.error("Error fetching updated high scores:", error.message);
-        } else {
-          setHighScores(updatedHighScores); // Update the state with the new high scores
-        }
-      } else {
-        console.error("Failed to record high score");
-      }
-    }
-  }, [user, score]);
-
-  // Fetch high scores on component mount
-  useEffect(() => {
-    const fetchHighScores = async () => {
-      const { data, error } = await supabase
-        .from("highScore")
-        .select("*")
-        .order("score", { ascending: false });
-
-      if (error) {
-        console.error("Error fetching high scores:", error.message);
-      } else {
-        setHighScores(data);
-      }
-    };
-
-    fetchHighScores();
+  const loadHighScores = useCallback(async () => {
+    const scores = await fetchHighScores();
+    setHighScores(scores);
   }, []);
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    loadHighScores();
+  }, [loadHighScores]);
+
+  useEffect(() => {
+    const loadCategories = async () => {
       try {
         const response = await fetch("https://opentdb.com/api_category.php");
         if (!response.ok) throw new Error("Network response was not ok");
@@ -90,14 +61,22 @@ const Home = ({ user }) => {
         console.error(error);
       }
     };
-
-    fetchCategories();
+    loadCategories();
   }, []);
+
+  const handleGameOver = useCallback(() => {
+    setGameStarted(false);
+    setIsModalOpen(false);
+    setFinalScore(score);
+    if (score > 0) {
+      setNamePromptOpen(true);
+    }
+  }, [score]);
 
   useEffect(() => {
     if (preGameStarted && preGameTimer > 0) {
       const countdown = setInterval(() => {
-        setPreGameTimer((prevTimer) => prevTimer - 1);
+        setPreGameTimer((prev) => prev - 1);
       }, 1000);
       return () => clearInterval(countdown);
     } else if (preGameStarted && preGameTimer === 0) {
@@ -109,21 +88,13 @@ const Home = ({ user }) => {
   useEffect(() => {
     if (gameStarted && timer > 0) {
       const countdown = setInterval(() => {
-        setTimer((prevTimer) => prevTimer - 1);
+        setTimer((prev) => prev - 1);
       }, 1000);
       return () => clearInterval(countdown);
     } else if (gameStarted && timer === 0) {
-      alert("Time's up! Your final score is " + score);
       handleGameOver();
-      setGameStarted(false);
-      setIsModalOpen(false);
     }
-  }, [gameStarted, timer, handleGameOver, score]);
-
-  const handleSelectCategory = async (category) => {
-    setSelectedCategory(category);
-    await fetchQuestion(category);
-  };
+  }, [gameStarted, timer, handleGameOver]);
 
   const fetchQuestion = async (category) => {
     try {
@@ -140,9 +111,7 @@ const Home = ({ user }) => {
       const data = await response.json();
 
       if (data.results.length === 0) {
-        setFetchError(
-          "No questions available. Please try a different category."
-        );
+        setFetchError("No questions available. Please try a different category.");
         return;
       }
 
@@ -150,7 +119,7 @@ const Home = ({ user }) => {
       setCurrentQuestion({
         text: he.decode(question.question),
         options: [
-          ...question.incorrect_answers.map((answer) => he.decode(answer)),
+          ...question.incorrect_answers.map((a) => he.decode(a)),
           he.decode(question.correct_answer),
         ].sort(() => Math.random() - 0.5),
         correctAnswer: he.decode(question.correct_answer),
@@ -162,43 +131,32 @@ const Home = ({ user }) => {
     }
   };
 
-  const handleCloseModal = async (isCorrect) => {
-    if (isCorrect) {
-      setScore((prevScore) => prevScore + 1);
-    }
+  const handleSelectCategory = async (category) => {
+    setSelectedCategory(category);
+    await fetchQuestion(category);
+  };
 
+  const handleCloseModal = (isCorrect) => {
+    if (isCorrect) {
+      setScore((prev) => prev + 1);
+    }
     setIsModalOpen(false);
     setCurrentQuestion(null);
   };
-
-  useEffect(() => {
-    if (user && score > 0) {
-      const storeUserScore = async () => {
-        try {
-          await storeScore(user.id, score);
-        } catch (error) {
-          console.error("Error storing score:", error);
-        }
-      };
-      storeUserScore();
-    }
-  }, [score, user]);
-
-  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
   const handleSkip = async () => {
     setIsModalOpen(false);
     setCurrentQuestion(null);
-    await delay(2000);
+    await new Promise((resolve) => setTimeout(resolve, 2000));
     await fetchQuestion(selectedCategory);
   };
 
   const handleStartGame = () => {
-    setIsInstructionsOpen(true); // Open the instructions modal
+    setIsInstructionsOpen(true);
   };
 
   const handleBeginGame = () => {
-    setIsInstructionsOpen(false); // Close instructions modal
+    setIsInstructionsOpen(false);
     setScore(0);
     setTimer(60);
     setPreGameTimer(3);
@@ -206,7 +164,22 @@ const Home = ({ user }) => {
   };
 
   const handleCloseInstructions = () => {
-    setIsInstructionsOpen(false); // Close the instructions modal without starting the game
+    setIsInstructionsOpen(false);
+  };
+
+  const handleSubmitScore = async () => {
+    const name = playerName.trim() || "Anonymous";
+    setSubmitting(true);
+    await submitScore(name, finalScore);
+    await loadHighScores();
+    setSubmitting(false);
+    setNamePromptOpen(false);
+    setPlayerName("");
+  };
+
+  const handleSkipScore = () => {
+    setNamePromptOpen(false);
+    setPlayerName("");
   };
 
   return (
@@ -236,8 +209,8 @@ const Home = ({ user }) => {
       {highScores.length > 0 && (
         <div className="highScore">
           <div className="highScore-container">
-            {highScores.map((newHighScore) => (
-              <HighScoreCard key={newHighScore.id} highScore={newHighScore} />
+            {highScores.map((hs, i) => (
+              <HighScoreCard key={i} highScore={hs} />
             ))}
           </div>
         </div>
@@ -249,7 +222,7 @@ const Home = ({ user }) => {
       <QuestionModal
         question={currentQuestion}
         isOpen={isModalOpen}
-        onClose={(isCorrect) => handleCloseModal(isCorrect)}
+        onClose={handleCloseModal}
         onSkip={handleSkip}
       />
       <Instructions
@@ -257,6 +230,33 @@ const Home = ({ user }) => {
         onClose={handleCloseInstructions}
         onBegin={handleBeginGame}
       />
+
+      {namePromptOpen && (
+        <div className="name-prompt-overlay">
+          <div className="name-prompt">
+            <h2>Time's Up!</h2>
+            <p className="final-score-text">Your score: {finalScore}</p>
+            <p>Enter your name for the leaderboard</p>
+            <input
+              type="text"
+              placeholder="Your name"
+              value={playerName}
+              onChange={(e) => setPlayerName(e.target.value)}
+              maxLength={20}
+              onKeyDown={(e) => e.key === "Enter" && handleSubmitScore()}
+              autoFocus
+            />
+            <div className="name-prompt-buttons">
+              <button onClick={handleSubmitScore} disabled={submitting}>
+                {submitting ? "Saving..." : "Submit"}
+              </button>
+              <button onClick={handleSkipScore} className="skip-button">
+                Skip
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

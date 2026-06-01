@@ -290,3 +290,83 @@ nav {
 .form-message {
   margin-top: 10px;
 }
+
+/* Name prompt overlay (game over score submission) */
+.name-prompt-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.name-prompt {
+  background: var(--secondary);
+  border: 2px solid var(--primary);
+  padding: 32px 40px;
+  border-radius: 8px;
+  text-align: center;
+  max-width: 360px;
+  width: 100%;
+}
+
+.name-prompt h2 {
+  margin-bottom: 8px;
+}
+
+.final-score-text {
+  font-size: 1.4em;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 16px;
+}
+
+.name-prompt input {
+  width: calc(100% - 20px);
+  padding: 10px;
+  margin: 12px 0;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.name-prompt-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.name-prompt-buttons button {
+  padding: 10px 24px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.name-prompt-buttons button:hover {
+  background: #1282a2;
+}
+
+.name-prompt-buttons button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.name-prompt-buttons .skip-button {
+  background: transparent;
+  border: 1px solid #555;
+  color: #aaa;
+}
+
+.name-prompt-buttons .skip-button:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
