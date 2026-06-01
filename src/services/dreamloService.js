@@ -15,14 +15,15 @@ export const submitScore = async (name, score) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, score }),
     });
+    const data = await res.json().catch(() => ({}));
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      console.error("submitScore failed:", res.status, err);
+      console.error("submitScore API error:", res.status, data);
       return false;
     }
+    console.log("submitScore success:", data);
     return true;
   } catch (error) {
-    console.error("submitScore error:", error);
+    console.error("submitScore network error:", error);
     return false;
   }
 };
